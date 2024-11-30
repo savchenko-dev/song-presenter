@@ -55,6 +55,12 @@ ipcMain.on("send-colors", (event, colors) => {
   }
 });
 
+ipcMain.on("send-image", (event, imageData) => {
+  if (displayWindow) {
+    displayWindow.webContents.send("update-image", imageData);
+  }
+});
+
 app.whenReady().then(createWindows);
 
 app.on("window-all-closed", function () {

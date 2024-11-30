@@ -27,6 +27,7 @@
         resize: none;
         outline: none;
         overflow: hidden; /* Hide scrollbar */
+        margin-top: 1rem;
       }
     </style>
   </head>
@@ -36,6 +37,9 @@
 
     <label for="text-color-picker">Text Color:</label>
     <input type="color" id="text-color-picker" value="#ffffff" />
+
+    <label for="bg-image-picker">Background Image:</label>
+    <input type="file" id="bg-image-picker" accept="image/*" />
 
     <textarea id="text-input" placeholder="Start typing..."></textarea>
 
@@ -59,6 +63,23 @@
 
       // Initial colors update
       updateDisplayColors();
+    </script>
+
+    <script>
+      const bgImagePicker = document.getElementById("bg-image-picker");
+
+      bgImagePicker.addEventListener("change", (event) => {
+        const file = event.target.files[0];
+
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = () => {
+            // Send base64 image to display window
+            window.api.sendImage(reader.result);
+          };
+          reader.readAsDataURL(file);
+        }
+      });
     </script>
 
     <script>

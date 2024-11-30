@@ -25,6 +25,7 @@
   </head>
   <body>
     <div id="display-area">Awaiting text...</div>
+
     <script>
       const displayArea = document.getElementById("display-area");
       window.api.onReceiveText((text) => {
@@ -36,6 +37,15 @@
       window.api.onReceiveColors((colors) => {
         document.body.style.backgroundColor = colors.backgroundColor;
         document.querySelector("#display-area").style.color = colors.textColor;
+      });
+    </script>
+
+    <script>
+      window.api.onReceiveImage((imageData) => {
+        document.body.style.backgroundImage = `url(${imageData})`;
+        document.body.style.backgroundSize = "cover"; // Adjusts image size to cover the element
+        document.body.style.backgroundRepeat = "no-repeat"; // Prevents repeating the image
+        document.body.style.backgroundPosition = "center";
       });
     </script>
   </body>
