@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Display Window</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        background-color: #121212;
+        color: #ffffff;
+      }
+      #display-area {
+        font-size: 48px;
+        text-align: center;
+        white-space: pre-wrap; /* Preserve whitespace and line breaks */
+      }
+    </style>
+  </head>
+  <body>
+    <div id="display-area">Awaiting text...</div>
+    <script>
+      const displayArea = document.getElementById("display-area");
+      window.api.onReceiveText((text) => {
+        displayArea.innerText = text; // Use innerText to preserve line breaks
+      });
+    </script>
+
+    <script>
+      window.api.onReceiveColors((colors) => {
+        document.body.style.backgroundColor = colors.backgroundColor;
+        document.querySelector("#display-area").style.color = colors.textColor;
+      });
+    </script>
+  </body>
+</html>

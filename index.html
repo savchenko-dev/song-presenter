@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Main Window</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        background-color: #121212;
+        color: #ffffff;
+        padding: 20px;
+        overflow-y: scroll; /* Enable vertical scrolling for the body if needed */
+      }
+      #text-input {
+        width: 100%;
+        min-height: 100px;
+        max-width: 100%;
+        box-sizing: border-box; /* Include padding and border in element's total width and height */
+        background-color: #2c2c2c;
+        color: #ffffff;
+        border: none;
+        padding: 10px;
+        font-size: 18px;
+        resize: none;
+        outline: none;
+        overflow: hidden; /* Hide scrollbar */
+      }
+    </style>
+  </head>
+  <body>
+    <label for="bg-color-picker">Background Color:</label>
+    <input type="color" id="bg-color-picker" value="#121212" />
+
+    <label for="text-color-picker">Text Color:</label>
+    <input type="color" id="text-color-picker" value="#ffffff" />
+
+    <textarea id="text-input" placeholder="Start typing..."></textarea>
+
+    <script>
+      const bgColorPicker = document.getElementById("bg-color-picker");
+      const textColorPicker = document.getElementById("text-color-picker");
+
+      function updateDisplayColors() {
+        const bgColor = bgColorPicker.value;
+        const textColor = textColorPicker.value;
+
+        // Send colors to display window
+        window.api.sendColors({
+          backgroundColor: bgColor,
+          textColor: textColor,
+        });
+      }
+
+      bgColorPicker.addEventListener("input", updateDisplayColors);
+      textColorPicker.addEventListener("input", updateDisplayColors);
+
+      // Initial colors update
+      updateDisplayColors();
+    </script>
+
+    <script>
+      const textarea = document.getElementById("text-input");
+
+      function adjustTextareaHeight() {
+        // Save current scroll position and scrollTop first
+        const scrollPos =
+          document.documentElement.scrollTop || document.body.scrollTop;
+        const caretPos = textarea.selectionStart;
+
+        // Reset the height to enable shrinking
+        textarea.style.height = "auto";
+
+        // Set the height to the scrollHeight to accommodate all text
+        textarea.style.height = textarea.scrollHeight + "px";
+
+        // Restore scroll and cursor position
+        document.documentElement.scrollTop = document.body.scrollTop =
+          scrollPos;
+
+        // Delay setting the selection to ensure it's applied correctly
+        setTimeout(() => textarea.setSelectionRange(caretPos, caretPos), 0);
+      }
+
+      function updateDisplayText() {
+        const text = textarea.value;
+        const cursorPosition = textarea.selectionStart;
+
+        // Split the text into lines
+        const lines = text.split("\n");
+        let currentLineIndex = 0;
+        let charCount = 0;
+
+        // Determine the current line index based on cursor position
+        for (let i = 0; i < lines.length; i++) {
+          charCount += lines[i].length + 1; // +1 for the newline character
+          if (cursorPosition <= charCount) {
+            currentLineIndex = i;
+            break;
+          }
+        }
+
+        // Find the start of the paragraph block
+        let startLine = currentLineIndex;
+        while (startLine > 0 && lines[startLine - 1].trim() !== "") {
+          startLine--;
+        }
+
+        // Find the end of the paragraph block
+        let endLine = currentLineIndex;
+        while (endLine < lines.length - 1 && lines[endLine + 1].trim() !== "") {
+          endLine++;
+        }
+
+        // Extract the paragraph block text
+        const currentParagraphBlock = lines
+          .slice(startLine, endLine + 1)
+          .join("\n");
+
+        // Send the current paragraph block text to the display window
+        window.api.sendText(currentParagraphBlock);
+
+        // Adjust the height of the textarea
+        adjustTextareaHeight();
+      }
+
+      textarea.addEventListener("input", updateDisplayText);
+      textarea.addEventListener("keyup", updateDisplayText);
+      textarea.addEventListener("mouseup", updateDisplayText);
+
+      // Initial text update and textarea height adjustment
+      updateDisplayText();
+      adjustTextareaHeight();
+    </script>
+  </body>
+</html>
