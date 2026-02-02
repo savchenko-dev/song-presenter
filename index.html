@@ -720,14 +720,15 @@
       function adjustTextareaHeight() {
         const scrollPos =
           document.documentElement.scrollTop || document.body.scrollTop;
-        const caretPos = textarea.selectionStart;
+        const selStart = textarea.selectionStart;
+        const selEnd = textarea.selectionEnd;
 
         textarea.style.height = "auto";
         textarea.style.height = textarea.scrollHeight + "px";
 
         document.documentElement.scrollTop = document.body.scrollTop =
           scrollPos;
-        setTimeout(() => textarea.setSelectionRange(caretPos, caretPos), 0);
+        setTimeout(() => textarea.setSelectionRange(selStart, selEnd), 0);
       }
 
       function updateDisplayText() {
