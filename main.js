@@ -1,8 +1,10 @@
 const { app, BrowserWindow, ipcMain } = require("electron");
 const path = require("path");
+const SongsStore = require("./songs-store");
 
 let mainWindow;
 let displayWindow;
+let songsStore;
 
 function createWindows() {
   mainWindow = new BrowserWindow({
@@ -61,7 +63,35 @@ ipcMain.on("send-image", (event, imageData) => {
   }
 });
 
-app.whenReady().then(createWindows);
+// Songs Store IPC Handlers
+ipcMain.handle("songs:getAll", () => {
+  return songsStore.getAll();
+});
+
+ipcMain.handle("songs:getById", (event, id) => {
+  return songsStore.getById(id);
+});
+
+ipcMain.handle("songs:search", (event, query) => {
+  return songsStore.search(query);
+});
+
+ipcMain.handle("songs:create", (event, { title, lyrics }) => {
+  return songsStore.create(title, lyrics);
+});
+
+ipcMain.handle("songs:update", (event, { id, title, lyrics }) => {
+  return songsStore.update(id, title, lyrics);
+});
+
+ipcMain.handle("songs:delete", (event, id) => {
+  return songsStore.delete(id);
+});
+
+app.whenReady().then(() => {
+  songsStore = new SongsStore();
+  createWindows();
+});
 
 app.on("window-all-closed", function () {
   if (process.platform !== "darwin") app.quit();
